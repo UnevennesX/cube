@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramienta Sample-cube</title>
+    <link rel="icon" type="image/png" href="https://cdn.dribbble.com/users/7549673/screenshots/17206704/media/1210a9d0ec8af427967e735935861eeb.png?resize=400x300&vertical=center" />
+    <style>
+        /* === CSS COMPLETO ACTUALIZADO CON FONDO DE CIELO SUAVE === */
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            /* Cambiado a un degradado suave de cielo */
+            background: linear-gradient(to bottom, #a8c0ff, #3f2b96); /* Un cielo azul claro */
+            color: #ddd;
+            overflow: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Estrellas más sutiles */
+            background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
+            z-index: -1;
+            animation: stars 400s linear infinite; /* Animación más lenta */
+            opacity: 0.3; /* Estrellas más tenues */
+        }
+
+        .twinkling {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
+            z-index: -1;
+            animation: twinkling 400s linear infinite; /* Animación más lenta */
+            opacity: 0.2; /* Destellos más tenues */
+        }
+
+        @keyframes stars {
+            0% { background-position: 0 0; }
+            100% { background-position: -5000px 2500px; } /* Reducido el desplazamiento */
+        }
+
+        @keyframes twinkling {
+            0% { background-position: 0 0; }
+            100% { background-position: -5000px 2500px; } /* Reducido el desplazamiento */
+        }
+
+        .container {
+            background: rgba(30, 30, 30, 0.8); /* Ligeramente más transparente */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.08);
+            width: 550px;
+            max-width: 95%;
+            text-align: center;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+            color: #bbb;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        h1:hover {
+            color: #00ff88;
+        }
+
+        textarea {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            background-color: #222;
+            color: #eee;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #bbb;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #9e9e9e;
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background-color: #757575;
+            transform: scale(1.05);
+        }
+
+        #resultados {
+            margin-top: 25px;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        .sugerencia {
+            border: 1px solid #444;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            background-color: #222;
+            transition: all 0.3s ease;
+        }
+
+        .sugerencia:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05);
+        }
+
+        .sugerencia h3 {
+            margin-top: 0;
+            color: #ddd;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .sugerencia p {
+            margin-bottom: 8px;
+            color: #ddd;
+        }
+
+        .sugerencia strong {
+            color: #bbb;
+            font-weight: 600;
+        }
+
+        .copy-link {
+            color: #bbb;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            word-break: break-all;
+            cursor: pointer;
+            display: block;
+            padding: 5px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .copy-link.copiado {
+            color: #00ff88 !important;
+            font-weight: bold;
+        }
+
+        .copy-link.error {
+            color: #ff4444 !important;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #222;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #bbb;
+        }
+
+        .close-button:hover {
+            color: #ddd;
+        }
+
+        .linkpagina {
+            color: #00ff88;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .linkpagina:hover {
+            color: #00cc6a;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    
+    <div class="container">
+        <h1 id="linkTitle">Sample-cube</h1>
+        <textarea id="linkInput" placeholder="Pega tu enlace aquí..."></textarea>
+        <button id="generarButton">Generar Links</button><br><br>
+        <div id="resultados"></div>
+    </div>
+
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">×</span>
+            <h2>Información</h2>
+            <p>Sample-cube<br><br>Basado en datos actualizados desde GitHub</p>
+            <h1 class="linkpagina" data-url="https://mi-pg.vercel.app/login/">UnevennesX</h1>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const linkInput = document.getElementById('linkInput');
+            const generarButton = document.getElementById('generarButton');
+            const resultadosDiv = document.getElementById('resultados');
+            const datosURL = 'https://raw.githubusercontent.com/UnevennesX/-CheckLinks-/main/datos-info.txt';
+            let dataCache = [];
+
+            // Función para obtener datos
+            async function obtenerDatos() {
+                try {
+                    const response = await fetch(datosURL);
+                    const data = await response.text();
+                    return parseData(data);
+                } catch (error) {
+                    console.error('Error:', error);
+                    resultadosDiv.innerHTML = '<div class="sugerencia error">Error al cargar los datos</div>';
+                    return [];
+                }
+            }
+
+            // Parsear datos para Sample-cube
+            function parseData(data) {
+                return data.split('----------------')
+                    .filter(entry => entry.trim())
+                    .map(entry => {
+                        const lines = entry.trim().split('\n');
+                        const entryData = {};
+                        lines.forEach(line => {
+                            const [key, value] = line.split(': ').map(s => s.trim());
+                            if (key && value) entryData[key] = value;
+                        });
+                        return entryData;
+                    })
+                    .filter(entry => entry['Tipo de Survey'] === 'Sample-cube');
+            }
+
+            // Búsqueda de coincidencias mejorada
+            function buscarCoincidencias(link) {
+                try {
+                    const url = new URL(link.startsWith('http') ? link : `https://${link}`);
+                    const hostname = url.hostname.replace('www.', '');
+                    const searchTerms = [
+                        hostname,
+                        hostname.split('.').slice(-2).join('.')
+                    ];
+
+                    return dataCache.filter(item => {
+                        const nombre = item.Nombre.toLowerCase();
+                        return searchTerms.some(term => nombre.includes(term.toLowerCase()));
+                    });
+                } catch {
+                    return [];
+                }
+            }
+
+            // Generar sugerencia para Sample-cube
+            function generarSugerencia(link, match, index, totalMatches) {
+                const rid = (link.match(/RID=([0-9a-fA-F-]{36})/i) || link.match(/([0-9a-fA-F-]{36})/i))?.[1];
+                if (!rid) return '<div class="sugerencia error">No se encontró RID válido</div>';
+
+                try {
+                    const urlTemplate = new URL(match.URL);
+                    const params = Array.from(urlTemplate.searchParams.entries());
+                    
+                    let generatedLink = `${urlTemplate.origin}${urlTemplate.pathname}?`;
+                    params.forEach(([key, value], i) => {
+                        const paramValue = key === 'RID' ? rid : value;
+                        generatedLink += `${i > 0 ? '&' : ''}${key}=${encodeURIComponent(paramValue)}`;
+                    });
+
+                    const suggestionTitle = totalMatches > 1 ? 
+                        `<h3>Sugerencia ${index + 1}</h3>` : `<h3>Sugerencia</h3>`;
+
+                    return `
+                        <div class="sugerencia">
+                            ${suggestionTitle}
+                            <p><strong>Tipo:</strong> ${match['Tipo de Survey']}</p>
+                            <p><strong>Nombre:</strong> ${match.Nombre}</p>
+                            <p><strong>Secret:</strong> ${urlTemplate.searchParams.get('secret') || 'No encontrado'}</p>
+                            <p><strong>Comentario:</strong> ${match.Comentario}</p>
+                            <p><strong>Fecha:</strong> ${match.Fecha}</p>
+                            <p><strong>Link Generado:</strong> 
+                                <span class="copy-link" data-link="${generatedLink}">
+                                    ${generatedLink}
+                                </span>
+                            </p>
+                        </div>
+                    `;
+                } catch (error) {
+                    return `<div class="sugerencia error">Error en plantilla: ${match.URL}</div>`;
+                }
+            }
+
+            // Función principal de generación
+            async function generarLinks() {
+                try {
+                    resultadosDiv.innerHTML = '<div class="sugerencia">Cargando...</div>';
+                    const link = linkInput.value.trim();
+
+                    if (!link) {
+                        resultadosDiv.innerHTML = '<div class="sugerencia error">Ingresa un enlace válido</div>';
+                        return;
+                    }
+
+                    if (dataCache.length === 0) {
+                        dataCache = await obtenerDatos();
+                    }
+
+                    const coincidencias = buscarCoincidencias(link);
+                    
+                    if (coincidencias.length === 0) {
+                        resultadosDiv.innerHTML = '<div class="sugerencia error">No se encontraron coincidencias</div>';
+                        return;
+                    }
+
+                    resultadosDiv.innerHTML = coincidencias
+                        .map((match, index) => generarSugerencia(link, match, index, coincidencias.length))
+                        .join('');
+
+                    // Configurar eventos de copiado
+                    document.querySelectorAll('.copy-link').forEach(elemento => {
+                        elemento.addEventListener('click', function() {
+                            copiarEnlace(this);
+                        });
+                    });
+
+                    // Copiar automáticamente si hay una sola sugerencia
+                    if (coincidencias.length === 1) {
+                        const elemento = resultadosDiv.querySelector('.copy-link');
+                        copiarEnlace(elemento);
+                    }
+
+                } catch (error) {
+                    resultadosDiv.innerHTML = '<div class="sugerencia error">Error inesperado</div>';
+                    console.error(error);
+                }
+            }
+
+            // Función de copiado mejorada
+            async function copiarEnlace(elemento) {
+                try {
+                    const link = elemento.getAttribute('data-link');
+                    if (!link) throw new Error('No hay enlace para copiar');
+
+                    // Usar un enfoque alternativo si navigator.clipboard no está disponible
+                    if (!navigator.clipboard) {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = link;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                    } else {
+                        await navigator.clipboard.writeText(link);
+                    }
+
+                    const originalText = elemento.textContent;
+                    elemento.textContent = '¡Copiado! ✓';
+                    elemento.classList.add('copiado');
+                    
+                    setTimeout(() => {
+                        elemento.textContent = originalText;
+                        elemento.classList.remove('copiado');
+                    }, 2000);
+                    
+                } catch (error) {
+                    elemento.textContent = 'Error al copiar';
+                    elemento.classList.add('error');
+                    console.error('Error al copiar:', error);
+                }
+            }
+
+            // Sistema de limpieza automática
+            let inactivityTimeout;
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimeout);
+                inactivityTimeout = setTimeout(() => {
+                    linkInput.value = '';
+                    resultadosDiv.innerHTML = '';
+                }, 120000);
+            }
+
+            // Event listeners
+            generarButton.addEventListener('click', generarLinks);
+            linkInput.addEventListener('input', resetInactivityTimer);
+            generarButton.addEventListener('click', resetInactivityTimer);
+            resetInactivityTimer();
+
+            // Control del modal
+            const linkTitle = document.getElementById('linkTitle');
+            const infoModal = document.getElementById('infoModal');
+            const closeModal = document.getElementById('closeModal');
+
+            linkTitle.addEventListener('click', () => infoModal.style.display = 'block');
+            closeModal.addEventListener('click', () => infoModal.style.display = 'none');
+            window.addEventListener('click', (e) => {
+                if (e.target === infoModal) infoModal.style.display = 'none';
+            });
+
+            document.querySelector('.linkpagina').addEventListener('click', (e) => {
+                window.open(e.target.dataset.url, '_blank');
+                infoModal.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
