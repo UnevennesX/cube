@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +6,7 @@
     <title>Herramienta Sample-cube</title>
     <link rel="icon" type="image/png" href="https://cdn.dribbble.com/users/7549673/screenshots/17206704/media/1210a9d0ec8af427967e735935861eeb.png?resize=400x300&vertical=center" />
     <style>
-        /* === CSS COMPLETO ACTUALIZADO CON FONDO DE CIELO SUAVE === */
+        /* === CSS COMPLETO ACTUALIZADO CON FONDO OSCURO SIN ESTRELLAS === */
         body {
             font-family: 'Roboto', sans-serif;
             display: flex;
@@ -15,47 +14,17 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            /* Cambiado a un degradado suave de cielo */
-            background: linear-gradient(to bottom, #a8c0ff, #3f2b96); /* Un cielo azul claro */
+            /* Fondo oscuro */
+            background-color: #121212; /* Un gris oscuro */
             color: #ddd;
             overflow: auto;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Estrellas más sutiles */
-            background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
-            z-index: -1;
-            animation: stars 400s linear infinite; /* Animación más lenta */
-            opacity: 0.3; /* Estrellas más tenues */
-        }
-
-        .twinkling {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
-            z-index: -1;
-            animation: twinkling 400s linear infinite; /* Animación más lenta */
-            opacity: 0.2; /* Destellos más tenues */
-        }
-
-        @keyframes stars {
-            0% { background-position: 0 0; }
-            100% { background-position: -5000px 2500px; } /* Reducido el desplazamiento */
-        }
-
-        @keyframes twinkling {
-            0% { background-position: 0 0; }
-            100% { background-position: -5000px 2500px; } /* Reducido el desplazamiento */
+        /* Ocultar las estrellas y el parpadeo */
+        .stars, .twinkling {
+            display: none;
         }
 
         .container {
@@ -227,9 +196,8 @@
     </style>
 </head>
 <body>
-    <div class="stars"></div>
-    <div class="twinkling"></div>
-    
+    <!-- Quitamos las estrellas y el parpadeo -->
+
     <div class="container">
         <h1 id="linkTitle">Sample-cube</h1>
         <textarea id="linkInput" placeholder="Pega tu enlace aquí..."></textarea>
@@ -310,14 +278,14 @@
                 try {
                     const urlTemplate = new URL(match.URL);
                     const params = Array.from(urlTemplate.searchParams.entries());
-                    
+
                     let generatedLink = `${urlTemplate.origin}${urlTemplate.pathname}?`;
                     params.forEach(([key, value], i) => {
                         const paramValue = key === 'RID' ? rid : value;
                         generatedLink += `${i > 0 ? '&' : ''}${key}=${encodeURIComponent(paramValue)}`;
                     });
 
-                    const suggestionTitle = totalMatches > 1 ? 
+                    const suggestionTitle = totalMatches > 1 ?
                         `<h3>Sugerencia ${index + 1}</h3>` : `<h3>Sugerencia</h3>`;
 
                     return `
@@ -328,7 +296,7 @@
                             <p><strong>Secret:</strong> ${urlTemplate.searchParams.get('secret') || 'No encontrado'}</p>
                             <p><strong>Comentario:</strong> ${match.Comentario}</p>
                             <p><strong>Fecha:</strong> ${match.Fecha}</p>
-                            <p><strong>Link Generado:</strong> 
+                            <p><strong>Link Generado:</strong>
                                 <span class="copy-link" data-link="${generatedLink}">
                                     ${generatedLink}
                                 </span>
@@ -356,7 +324,7 @@
                     }
 
                     const coincidencias = buscarCoincidencias(link);
-                    
+
                     if (coincidencias.length === 0) {
                         resultadosDiv.innerHTML = '<div class="sugerencia error">No se encontraron coincidencias</div>';
                         return;
@@ -406,12 +374,12 @@
                     const originalText = elemento.textContent;
                     elemento.textContent = '¡Copiado! ✓';
                     elemento.classList.add('copiado');
-                    
+
                     setTimeout(() => {
                         elemento.textContent = originalText;
                         elemento.classList.remove('copiado');
                     }, 2000);
-                    
+
                 } catch (error) {
                     elemento.textContent = 'Error al copiar';
                     elemento.classList.add('error');
